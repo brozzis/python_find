@@ -2,78 +2,110 @@
 # -- 
 
 from os import walk
-
-mypath = u"."
-f = []
-for (dirpath, dirnames, filenames) in walk(mypath):
-    f.extend(filenames)
-    break
-
-print (f)
-
-# -- 
-
+import glob
+import os
 from os import listdir
 from os.path import isfile, join
-onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
-print (onlyfiles)
+def walk_dir():
+    mypath = u"."
+    f = []
+    for (dirpath, dirnames, filenames) in walk(mypath):
+        f.extend(filenames)
+        break
+
+    print (f)
 
 # -- 
-# List all .txt files in a specified directory + subdirectories
 
-print ("List all .txt files in a specified directory + subdirectories")
-import os
+def walk_local_files():
+    onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
-path = '.'
-
-files = []
-# r=root, d=directories, f = files
-for r, d, f in os.walk(path):
-    for file in f:
-        if '.txt' in file:
-            files.append(os.path.join(r, file))
-
-for f in files:
-    print(f)
+    print (onlyfiles)
 
 
-print("List all directories in a specified directory + subdirectories")
-import os
+def walk_recursive_files():
+    print ("List all .txt files in a specified directory + subdirectories")
 
-path = mypath
+    path = '.'
 
-folders = []
+    files = []
+    # r=root, d=directories, f = files
+    for r, d, f in os.walk(path):
+        for file in f:
+            if '.txt' in file:
+                files.append(os.path.join(r, file))
 
-# r=root, d=directories, f = files
-for r, d, f in os.walk(path):
-    for folder in d:
-        folders.append(os.path.join(r, folder))
-
-for f in folders:
-    print(f)
-
-
-print("Glob: List all .txt files in a specified directory + subdirectories (**).")
+    for f in files:
+        print(f)
 
 
-import glob
-
-path = mypath
-
-files = [f for f in glob.glob(path + "**/*.txt", recursive=True)]
-
-for f in files:
-    print(f)
 
 
-print("Glob: List all DIRS specified directory + subdirectories (**).")
+def walk_dirs():
+    print("List all directories in a specified directory + subdirectories")
+    path = mypath
 
-import glob
+    folders = []
 
-folders = [f for f in glob.glob(path + "**/", recursive=True)]
+    # r=root, d=directories, f = files
+    for r, d, f in os.walk(path):
+        for folder in d:
+            folders.append(os.path.join(r, folder))
 
-for f in folders:
-    print(f)
+    for f in folders:
+        print(f)
 
+
+
+
+def glob_files(path):
+    print("Glob: List all .txt files in a specified directory + subdirectories (**).")
+
+    files = [f for f in glob.glob(path + "**/*", recursive=True)]
+
+    print("ho trovato: ", len(files), " files")
+    return files
+    
+
+
+def glob_dirs(path):
+    print("Glob: List all DIRS specified directory + subdirectories (**).")
+
+    folders = [f for f in glob.glob(path + "**/", recursive=True)]
+
+    for f in folders:
+        print(f)
+
+
+
+if __name__ == '__main__':
+    files = glob_files("./")
+
+    # import os   
+    conta = {}
+    for f in files:
+        filename, file_extension = os.path.splitext(f)
+        conta[file_extension] = conta.get(file_extension,0)+1
+
+    ## from collections import Counter
+    ## Counter()
+
+    from collections import OrderedDict
+    dd = OrderedDict(sorted(conta.items(), key=lambda x: x[1], reverse=True) )
+
+    i = 0
+    for k, v in dd.items():
+        print(k, v)
+        i += 1
+        if i > 40: 
+            break
+
+    def off():
+        for k, v in conta.items():
+            if v>1:
+                print(k, v)
+
+    #for f in files:
+    #    print(f)
 
